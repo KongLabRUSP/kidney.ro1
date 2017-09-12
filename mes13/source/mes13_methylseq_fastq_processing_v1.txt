@@ -1,0 +1,97 @@
+# |------------------------------------------|
+# | Project: Study of Diabetes in MES13 cells|
+# | Script: Linux script                     |
+# | Scientist: Wenji Li                      |
+# | Analysis: Davit Sargsyan                 |
+# | Created: 07/25/2017                      |
+# |------------------------------------------|
+
+# Create constants
+# 1. Bismark
+BM="/home/administrator/Documents/Bismark/bismark"
+
+# 2. Gene reference files
+GENE_REF="/home/administrator/Documents/mm9.2_for_bismark"
+
+# 3. Home directory
+HOME_DIR="/home/administrator/Documents/Wenji_07252017/Wenji_MethylSeq_07252017/"
+
+# Change working directory
+cd $HOME_DIR"FastQ_Files"
+ls
+
+# Step0: Quality control of FastQ files with Fast QC 
+fastqc \
+--extract \
+--outdir=$HOME_DIR"FastQC" \
+*.gz
+
+# Step1: Allign all FastQ files in the the directory
+$BM \
+--parallel 4 \
+--output_dir $HOME_DIR"BAM_Files" \
+$GENE_REF \
+*.gz
+
+# NOTE (DS, 07/29/2017): Sample FX-1uM_S6_R1_001 failed to converge in the loop.
+#                        Run again separately, sigle thread process.
+# DS, 08/10/2017: ran the code below:
+$BM \
+--output_dir $HOME_DIR"BAM_Files" \
+$GENE_REF \
+FX-1uM_S6_R1_001.fastq.gz
+
+#Step2: Sort and Index
+cd $HOME_DIR"BAM_Files"
+
+find *.bam -exec samtools sort {} {} \; 
+
+# NOTE: deleted all unsorted BAM files; 
+# the remaining files have ".bam.bam" extention
+
+find *.bam -exec samtools index {} \;
+
+# WHY THIS IS NOT WORKING? find *.bam -exec samtools -f sort {} {} \;
+
+# View the BAM+BAI files in IGV
+# NOTE (07/25/2017, DS): VERY HIGH LEVEL OF DUPLICATES! 
+
+# Deduplicate
+cd $HOME_DIR"BAM_Files/deduplicated"
+samtools rmdup -s LG_S3_R1_001_bismark_bt2.bam.bam WJ1.bam
+samtools rmdup -s HG_S4_R1_001_bismark_bt2.bam.bam WJ2.bam
+samtools rmdup -s MIC_S5_R1_001_bismark_bt2.bam.bam WJ3.bam
+samtools rmdup -s FX-1uM_S6_R1_001_bismark_bt2.bam.bam WJ5.bam
+samtools rmdup -s Ber-6uM_S7_R1_001_bismark_bt2.bam.bam WJ7.bam
+# LOOP?
+
+# Index deduplicated files
+# REMOVE ORIGINAL FILES FORM THIS FOLDER, THEN PROCEED!
+find *.bam -exec samtools index {} \;
+
+# Step3: Extract methylated/unmethylated counts from alignment files
+samtools view -h WJ1.bam | \
+python extract_CpG_data.py -i - -o $HOME_DIR"COV_Files/WJ1.cov"
+samtools view -h WJ2.bam | \
+python extract_CpG_data.py -i - -o $HOME_DIR"COV_Files/WJ2.cov"
+samtools view -h WJ3.bam | \
+python extract_CpG_data.py -i - -o $HOME_DIR"COV_Files/WJ3.cov"
+samtools view -h WJ5.bam | \
+python extract_CpG_data.py -i - -o $HOME_DIR"COV_Files/WJ5.cov"
+samtools view -h WJ7.bam | \
+python extract_CpG_data.py -i - -o $HOME_DIR"COV_Files/WJ7.cov"
+
+# # LOOP?
+# find *bam -exec python extract_CpG_data.py -i - -o {}.cov \;
+# OR
+# samtools view -h *.bam | \
+# python extract_CpG_data.py -i - -o *.cov
+
+# Step 4: Cluster CpG sites into regions
+cd $HOME_DIR"COV_Files"
+python combine_CpG_sites.py \
+-o combined.csv *.cov
+
+# Step 5: Test regions for differential methylation
+Rscript findDMRs.r -i combined.csv -o results.csv \
+-n WJ1 WJ2 WJ3 WJ5 WJ7
