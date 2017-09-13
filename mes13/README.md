@@ -15,6 +15,7 @@
 ## Daily Logs<a name="logs"></a>
 ### 09/12/2017
 * Added log2 difference analysis of % methilation
+* Analysis script Version 2: collapse CpGs by regions and gene
 
 ### 09/11/2017
 * Added analysis script for % methylation

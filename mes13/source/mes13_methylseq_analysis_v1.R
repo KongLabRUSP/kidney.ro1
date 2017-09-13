@@ -1,5 +1,5 @@
 # |----------------------------------------------------------------------------------|
-# | Project: Study of Diabetes in MES13 cells                                                                         |
+# | Project: Study of Diabetes in MES13 cells                                        |
 # | Script: Methyl-seq data analysis and visualization                               |
 # | Author: Davit Sargsyan                                                           |
 # | Created: 09/11/2017                                                              |
