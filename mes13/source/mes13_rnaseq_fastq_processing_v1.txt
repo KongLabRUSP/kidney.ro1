@@ -1,0 +1,86 @@
+# |------------------------------------------|
+# | Project: Study of Diabetes in MES13 cells|
+# | Authors: Wenji, Davit                    |
+# | Created: 07/25/2017                      |
+# |------------------------------------------|
+#********************************************************************
+# Create constants
+# 1. Gene annotation file
+GENE_ANNO="/home/administrator/Documents/mm9.2_for_bismark/Mus_musculus_UCSC_mm9.2/Mus_musculus/UCSC/mm9/Annotation/Genes/genes.gtf"
+
+# 2. Gene reference files
+GENE_REF="/home/administrator/Documents/mm9.2_for_bismark/Mus_musculus_UCSC_mm9.2/Mus_musculus/UCSC/mm9/Sequence/Bowtie2Index/genome"
+
+# 3. Home directory
+HOME_DIR="/home/administrator/Documents/Wenji_07252017/Wenji_RNASeq_07252017/"
+
+# Change working directory
+cd $HOME_DIR"FastQ_Files"
+ls
+
+# Step0: Quality control of FastQ files with Fast QC 
+fastqc \
+--extract \
+--outdir=$HOME_DIR"FastQC" \
+*.gz
+
+# Step1: Allign all FastQ files in the the directory
+# Make new directories
+find *.gz \
+-exec mkdir \
+$HOME_DIR"BAM_Files/"{} \;
+
+find *.gz \
+-exec tophat2 \
+-G $GENE_ANNO \
+-p 8 \
+--output-dir $HOME_DIR"BAM_Files/"{} \
+$GENE_REF {} \;
+
+# |-------------------------------------------------------|
+# | NOTE:Copy teh "accepted_hits.bam" file from each      |
+# |      newly-created subfolder to the BAM_Files folder  |
+# |      and rename the files according to the Excel      |
+# |      Legend file.                                     |
+# |-------------------------------------------------------|
+
+#Step2: Sort and Index
+cd $HOME_DIR"BAM_Files"
+
+find *.bam -exec samtools sort -o {} {} \; 
+
+cd sorted_07262017
+find *.bam -exec samtools index {} \;
+
+# |-------------------------------------------------------|
+# | Inspect the files in Integrated Genomics Viewer (IGV) |
+# |-------------------------------------------------------|
+
+# Step3a: Remove duplicates
+cd $HOME_DIR"BAM_Files/deduplicated"
+samtools rmdup -s Wj1.bam Wj1_dd.bam
+samtools rmdup -s Wj2.bam Wj2_dd.bam
+samtools rmdup -s Wj3.bam Wj3_dd.bam
+samtools rmdup -s Wj4.bam Wj4_dd.bam
+samtools rmdup -s Wj5.bam Wj5_dd.bam
+samtools rmdup -s Wj6.bam Wj6_dd.bam
+samtools rmdup -s Wj7.bam Wj7_dd.bam
+
+# Index deduplicated files
+# REMOVE ORIGINAL FILES FORM THIS FOLDER, THEN PROCEED!
+find *.bam -exec samtools index {} \;
+
+# Step3: Run cuffdiff
+cuffdiff \
+-p 8 \
+-o $HOME_DIR"Results" \
+--no-update-check \
+-L LG,HG,MIC_1_5_uM,TIIA_5_uM,FX_1_uM,Gen_10_uM,Ber_6_uM \
+$GENE_ANNO \
+Wj1_dd.bam \
+Wj2_dd.bam \
+Wj3_dd.bam \
+Wj4_dd.bam \
+Wj5_dd.bam \
+Wj6_dd.bam \
+Wj7_dd.bam
