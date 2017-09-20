@@ -1,0 +1,40 @@
+# |------------------------------------------|
+# | Project: DB/DB RNA-seq Alignment         |
+# | Script: Linux script                     |
+# | Scientist: David Cheng                   |
+# | Analysis: Davit Sargsyan                 |
+# | Created: 09/19/2017                      |
+# |------------------------------------------|
+# Create constants
+# 1. Gene annotation file
+GENE_ANNO="/home/administrator/Documents/mm9.2_for_bismark/Mus_musculus_UCSC_mm9.2/Mus_musculus/UCSC/mm9/Annotation/Genes/genes.gtf"
+
+# 2. Gene reference files
+GENE_REF="/home/administrator/Documents/mm9.2_for_bismark/Mus_musculus_UCSC_mm9.2/Mus_musculus/UCSC/mm9/Sequence/Bowtie2Index/genome"
+
+# 3. Home directory
+HOME_DIR="/home/administrator/Documents/David_RNAseq_bgi/"
+
+# Change working directory
+cd $HOME_DIR"FastQ_Files"
+ls
+
+# PROCESSED BY RENYI AND DAVID, SEE THEIR SCRIPT:
+??? (ask Renyi for the script location and name!)
+
+# Step3: Run cuffdiff
+# Note: only interested in counts, not stats, hence treatment = sample!
+cuffdiff \
+-p 8 \
+-o $HOME_DIR"Results" \
+--no-update-check \
+-L DR1,DR2,DR3,DR4,DR5,DR6,DR7,DR8 \
+$GENE_ANNO \
+DR1dedup.bam.prefix.bam \
+DR2dedup.bam.prefix.bam \
+DR3dedup.bam.prefix.bam \
+DR4dedup.bam.prefix.bam \
+DR5dedup.bam.prefix.bam \
+DR6dedup.bam.prefix.bam \
+DR7dedup.bam.prefix.bam \
+DR8dedup.bam.prefix.bam 
