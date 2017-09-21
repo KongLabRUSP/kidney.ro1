@@ -35,7 +35,7 @@ trt.names <- c("LG",
                "Ber 6uM")
 
 # Load data----
-peakAnno1 <- annotatePeak(peak = "mes13/data/combined.csv", 
+peakAnno1 <- annotatePeak(peak = "mes13/data/methyl_seq/combined.csv", 
                           tssRegion = c(-3000, 3000), 
                           TxDb = TxDb.Mmusculus.UCSC.mm9.knownGene,
                           annoDb = "org.Mm.eg.db")

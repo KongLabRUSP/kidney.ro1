@@ -21,6 +21,9 @@
 ## Results <a name="results"></a>
 
 ## Daily Logs<a name="logs"></a>
+### 09/20/2017
+* Added reverse mapping to TNF signaling pathway etc.
+
 ### 09/18/2017
 * Added network plots
 * Pathway lists explored with KEGG.db and reactome.db R databases
