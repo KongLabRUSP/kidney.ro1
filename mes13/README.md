@@ -21,6 +21,9 @@
 ## Results <a name="results"></a>
 
 ## Daily Logs<a name="logs"></a>
+### 09/23/2017
+* Added db/db methyl-seq analysis
+
 ### 09/20/2017
 * Added reverse mapping to TNF signaling pathway etc.
 
