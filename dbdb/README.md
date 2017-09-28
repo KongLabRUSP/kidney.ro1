@@ -23,4 +23,8 @@ NOTE: Redo realignment, get BAM files and deduplicate!
 ## Results<a name="results"></a>
 
 ## Daily Logs<a name="logs"></a>
+### 09/27/2017
+* Added mapping to oxidative stress and inflamation pathways
+
 ### 09/19/2017
+* Started
