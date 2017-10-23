@@ -1,12 +1,12 @@
 # |----------------------------------------------------------------------------------|
-# | Project: Study of Diabetes in MES13 cells                                        |
+# | Project: Study of DiabetesDb/Db                                        |
 # | Script: Methyl-seq data analysis and visualization                               |
 # | Author: Davit Sargsyan                                                           |
 # | Created: 09/12/2017                                                              |
 # |----------------------------------------------------------------------------------|
 # Header----
 # Save consol output to a log file
-# sink(file = "tmp/log_mes13_methylseq_data_analysis_v1.txt")
+# sink(file = "tmp/log_dbdb_methylseq_data_analysis_v1.txt")
 
 # Source: file:///C:/R/R-3.3.2/library/ChIPseeker/doc/ChIPseeker.html
 # Source: http://bioconductor.org/packages/release/data/annotation/html/org.Mm.eg.db.html
