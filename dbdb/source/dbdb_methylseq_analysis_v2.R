@@ -1,16 +1,12 @@
 # |----------------------------------------------------------------------------------|
-<<<<<<< HEAD
-# | Project: Study of DiabetesDb/Db                                        |
-=======
-# | Project: Study of DiabetesDb/Db                                       |
->>>>>>> f05c27f242b23809b1aebeb0bc771a9f326a5c00
+# | Project: Study of DiabetesDb/Db                                                  |
 # | Script: Methyl-seq data analysis and visualization                               |
 # | Author: Davit Sargsyan                                                           |
 # | Created: 09/23/2017                                                              |
 # |----------------------------------------------------------------------------------|
 # Header----
 # Save consol output to a log file
-# sink(file = "tmp/log_dbdb_methylseq_data_analysis_v1.txt")
+# sink(file = "tmp/log_mes13_methylseq_data_analysis_v1.txt")
 
 # Source: file:///C:/R/R-3.3.2/library/ChIPseeker/doc/ChIPseeker.html
 # Source: http://bioconductor.org/packages/release/data/annotation/html/org.Mm.eg.db.html
@@ -199,15 +195,6 @@ p1 <- ggplot(dt.reg.l,
   theme(plot.title = element_text(hjust = 0.5))
 p1
 
-tiff(filename = "dbdb/tmp/total_pct_methyl.tiff",
-     height = 5,
-     width = 6,
-     units = 'in',
-     res = 300,
-     compression = "lzw+p")
-print(p1)
-graphics.off()
-
 # Part II: gene methylation----
 # NOTE: collapse samples
 dt2 <- data.table(dt1[, 1:4],
@@ -253,6 +240,15 @@ dt.gene <- data.table(gene = dt.gene$Group.1,
                       pct = round(100*dt.gene[, c(5, 7, 9, 11)]/
                                     dt.gene[, c(4, 6, 8, 10)],
                                   1))
+names(dt.gene)[4:7] <- unique(trt.names)
+dt.gene
+
+# SAVE THIS VERSION
+dt2 <- dt.gene
+
+# NEW (09/27/2017): remove Ber and keep promoter only----
+dt.gene <- droplevels(dt.gene[dt.gene$reg == "Promoter", ])
+dt.gene
 
 # Melt data
 dt.gene.l <- melt.data.table(data = dt.gene,
@@ -260,21 +256,21 @@ dt.gene.l <- melt.data.table(data = dt.gene,
                              measure.vars = 4:7,
                              variable.name = "Treatment",
                              value.name = "Methylation(%)")
-dt.gene.l$gene.id <- paste(dt.gene.l $gene,
-                           "(",
-                           dt.gene.l $CpG,
-                           " CpG)",
-                           sep = "")
+# dt.gene.l$gene.id <- paste(dt.gene.l $gene,
+#                            "(",
+#                            dt.gene.l $CpG,
+#                            " CpG)",
+#                            sep = "")
 dt.gene.l$Treatment <- factor(dt.gene.l$Treatment)
-levels(dt.gene.l$Treatment) <- c("db/m, 16 weeks",
-                                 "db/db, 16 weeks",
-                                 "db/m, 21 weeks",
-                                 "db/db, 21 weeks")
+# levels(dt.gene.l$Treatment) <- c("db/m, 16 weeks",
+#                                  "db/db, 16 weeks",
+#                                  "db/m, 21 weeks",
+#                                  "db/db, 21 weeks")
 summary(dt.gene.l)
 dt.gene.l
 
 # Genes with largest differences at 16 weeks (db/db - db/m methylation)----
-dt.gene$dbdb_dbm_16w <- dt.gene$pct.db_db_16w_X - dt.gene$pct.db_m_16w_X
+dt.gene$dbdb_dbm_16w <- dt.gene$`db/db,16w` - dt.gene$`db/m,16w`
 m.diff <- dt.gene[!is.nan(dbdb_dbm_16w), c(1, 2, 8)]
 m.diff <- m.diff[order(dbdb_dbm_16w), ]
 m.diff
@@ -283,7 +279,7 @@ m.diff
 gene.sorted <- unique(as.character(m.diff$gene))
 
 # a. Highest Positive Difference at 16 weeks (db/db - db/m)----
-gene.up <- gene.sorted[(length(gene.sorted) - 49):length(gene.sorted)]
+gene.up <- gene.sorted[(length(gene.sorted) - 19):length(gene.sorted)]
 tmp <- subset(dt.gene.l,
               as.character(gene) %in% gene.up)
 tmp
@@ -302,24 +298,15 @@ p2a <- ggplot(data = tmp) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_discrete("Gene",
                    expand = c(0, 0)) +
-  ggtitle("Top 50 Genes With Increased Methylation \n Db/Db - Db/M, at 16 Weeks") +
+  # ggtitle("Top 50 Genes With Increased Methylation \n Db/Db - Db/M, at 16 Weeks") +
   theme(axis.text.x = element_text(angle = 30,
                                    hjust = 1),
         # legend.position = "top",
         plot.title = element_text(hjust = 0.5))
 p2a
 
-tiff(filename = "dbdb/tmp/top50_dbdb_dbm_16w_pos_meth_diff.tiff",
-     height = 8,
-     width = 7,
-     units = 'in',
-     res = 300,
-     compression = "lzw+p")
-print(p2a)
-graphics.off()
-
 # b. Genes with smallest change in methylation (db/db - db/m)----
-gene.dn <- gene.sorted[1:50]
+gene.dn <- gene.sorted[1:20]
 tmp <- subset(dt.gene.l,
               as.character(gene) %in% gene.dn)
 tmp
@@ -338,198 +325,97 @@ p2b <- ggplot(data = tmp) +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_discrete("Gene",
                    expand = c(0, 0)) +
-  ggtitle("Top 50 Genes With Decreased Methylation \n Db/Db - Db/M, at 16 Weeks") +
+  # ggtitle("Top 50 Genes With Decreased Methylation \n Db/Db - Db/M, at 16 Weeks") +
   theme(axis.text.x = element_text(angle = 30,
                                    hjust = 1),
         # legend.position = "top",
         plot.title = element_text(hjust = 0.5))
 p2b
 
-tiff(filename = "dbdb/tmp/top50_dbdb_dbm_16w_neg_meth_diff.tiff",
-     height = 8,
-     width = 7,
-     units = 'in',
-     res = 300,
-     compression = "lzw+p")
-print(p2b)
-graphics.off()
+# Save the tables----
+write.csv(dt.gene,
+          file = "dbdb/tmp/dt.gene.16w.csv")
+ 
+# Genes with largest differences at 21 weeks (db/db - db/m methylation)----
+dt.gene$dbdb_dbm_21w <- dt.gene$`db/db,21w` - dt.gene$`db/m,21w`
+m.diff <- dt.gene[!is.nan(dbdb_dbm_21w), c(1, 2, 8)]
+m.diff <- m.diff[order(dbdb_dbm_21w), ]
+m.diff
+
+# Genes with largest change in methylation (db/db - db/m)----
+gene.sorted <- unique(as.character(m.diff$gene))
+
+# c. Highest Positive Difference at 21 weeks (db/db - db/m)----
+gene.up <- gene.sorted[(length(gene.sorted) - 19):length(gene.sorted)]
+tmp <- subset(dt.gene.l,
+              as.character(gene) %in% gene.up)
+tmp
+
+p2c <- ggplot(data = tmp) +
+  facet_wrap(~ reg,
+             #scales = "free_y",
+             nrow = 1) +
+  geom_tile(aes(x =  Treatment,
+                y = gene,
+                fill = `Methylation(%)`),
+            color = "black") +
+  scale_fill_gradient2(high = "red",
+                       limit = c(0, 100),
+                       name = "Methylation(%)") +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_y_discrete("Gene",
+                   expand = c(0, 0)) +
+  # ggtitle("Top 50 Genes With Increased Methylation \n Db/Db - Db/M, at 16 Weeks") +
+  theme(axis.text.x = element_text(angle = 30,
+                                   hjust = 1),
+        # legend.position = "top",
+        plot.title = element_text(hjust = 0.5))
+p2c
+
+# d. Genes with smallest change in methylation (db/db - db/m)----
+gene.dn <- gene.sorted[1:20]
+tmp <- subset(dt.gene.l,
+              as.character(gene) %in% gene.dn)
+tmp
+
+p2d <- ggplot(data = tmp) +
+  facet_wrap(~ reg,
+             #scales = "free_y",
+             nrow = 1) +
+  geom_tile(aes(x =  Treatment,
+                y = gene,
+                fill = `Methylation(%)`),
+            color = "black") +
+  scale_fill_gradient2(high = "red",
+                       limit = c(0, 100),
+                       name = "Methylation(%)") +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_y_discrete("Gene",
+                   expand = c(0, 0)) +
+  # ggtitle("Top 50 Genes With Decreased Methylation \n Db/Db - Db/M, at 16 Weeks") +
+  theme(axis.text.x = element_text(angle = 30,
+                                   hjust = 1),
+        # legend.position = "top",
+        plot.title = element_text(hjust = 0.5))
+p2d
 
 # Save the tables----
 write.csv(dt.gene,
           file = "dbdb/tmp/dt.gene.csv")
- 
-# # Log2 change (2-fold change)----
-# # NOTE: add 1 to all non-NA values so log can be calculated
-# dt.log2 <- apply(dt.gene[, 4:8],
-#                             MARGIN = 2,
-#                             FUN = function(a){
-#                               a <- log2(a + 1)
-#                               return(a)
-#                             })
-# head(dt.log2)
-# 
-# # Compute log2 differences with positive control (High Glucose)
-# log2.diff <- dt.log2[, -2] - dt.log2[, 2]
-# colnames(log2.diff) <- paste(levels(dt.gene.l$Treatment)[-2],
-#                              levels(dt.gene.l$Treatment)[2],
-#                              sep = " - ")
-# log2.diff <- data.table(dt.gene[, 1:2],
-#                         log2.diff)
-# log2.diff 
-# 
-# # Remove gene if all treatment differences are NaN
-# ndx.rm <- apply(X = log2.diff[, 3:6],
-#                 MARGIN = 1,
-#                 FUN = function(a) {
-#                   return(all(is.nan(a)))
-#                 })
-# sum(ndx.rm)
-# dt2 <- log2.diff[!ndx.rm, ]
-# dt2
-# 
-# # Save the table----
-# write.csv(dt2,
-#           file = "mes13/tmp/dt2.csv")
-# 
-# # Long data----
-# dt2.l <- melt.data.table(data = dt2,
-#                          id.vars = 1:2,
-#                          measure.vars = 3:6,
-#                          variable.name = "Treatment",
-#                          value.name = "Log2 Difference")
-# dt2.l$Treatment <- factor(dt2.l$Treatment)
-# 
-# # a. Highest Positive  or Negative Difference (HG - LG)----
-# tmp <- subset(dt2.l,
-#               as.character(gene) %in% unique(c(gene.up,
-#                                                gene.dn)))
-# tmp
-# 
-# p3 <- ggplot(data = tmp) +
-#   coord_flip() +
-#   facet_wrap(~ reg,
-#              # scales = "free_y",
-#              ncol = 1) +
-#   geom_tile(aes(x =  Treatment,
-#                 y = gene,
-#                 fill = `Log2 Difference`),
-#             color = "black") +
-#   scale_fill_gradient2(high = "green",
-#                        mid = "black",
-#                        low = "red",
-#                        midpoint = 0,
-#                        name = "Difference of Log2(% Methyl)") +
-#   scale_x_discrete(expand = c(0, 0)) +
-#   scale_y_discrete("Gene",
-#                    expand = c(0, 0)) +
-#   ggtitle("MES13: Differences of Log2(% Methylation), Top 50 Largest Posotive and Top50 Largest Negative HG-LG Methylation Genes") +
-#   theme(axis.text.x = element_text(angle = 45,
-#                                    hjust = 1),
-#         legend.position = "top",
-#         plot.title = element_text(hjust = 0.5))
-# print(p3)
-# 
-# tiff(filename = "mes13/tmp/top50_lg-hg_hg-lg_log2_pct_methyl.tiff",
-#      height = 6,
+# tiff(filename = "mes13/tmp/top_meth_diff.tiff",
+#      height = 12,
 #      width = 12,
 #      units = 'in',
 #      res = 300,
 #      compression = "lzw+p")
-# print(p3)
+# gridExtra::grid.arrange(p2a, p2b, p2c, p2d, nrow = 2)
 # graphics.off()
-# 
-# # b. Genes with defined (HG - LG) and log2 change of at least +/-1----
-# tmp <- subset(dt2.l,
-#               as.character(gene) %in% gene.sorted)
-# tmp
-# 
-# tmp[, Keep := (max(abs(`Log2 Difference`),
-#                    na.rm = TRUE) >= 2),
-#     by = "gene"]
-# sum(tmp$Keep)
-# gene.keep <- unique(as.character(tmp$gene[tmp$Keep]))
-# tmp <- subset(tmp,
-#               gene %in% gene.keep)
-# length(unique(tmp$gene))
-# 
-# # Plot
-# p4 <- ggplot(data = tmp) +
-#   coord_flip() +
-#   facet_wrap(~ reg,
-#              # scales = "free_y",
-#              ncol = 1) +
-#   geom_tile(aes(x =  Treatment,
-#                 y = gene,
-#                 fill = `Log2 Difference`),
-#             color = "black") +
-#   scale_fill_gradient2(high = "green",
-#                        mid = "black",
-#                        low = "red",
-#                        midpoint = 0,
-#                        name = "Difference of\nLog2(% Methyl)") +
-#   scale_x_discrete(expand = c(0, 0)) +
-#   scale_y_discrete("Gene",
-#                    expand = c(0, 0)) +
-#   ggtitle("MES13: Differences of Log2(% Methylation)\nGenes With At Least One Log2 Diff >= +/-2") +
-#   theme(axis.text.x = element_text(angle = 45,
-#                                    hjust = 1),
-#         legend.position = "top",
-#         plot.title = element_text(hjust = 0.5))
-# print(p4)
-# 
-# tiff(filename = "mes13/tmp/log2diff_atleast2.tiff",
-#      height = 6,
-#      width = 9,
-#      units = 'in',
-#      res = 300,
-#      compression = "lzw+p")
-# print(p4)
-# graphics.off()
-# 
-# # Part III: Pathway analysis with Reactome----
-# # Get Entrezgene IDs
-# geneID <- unique(dt1$geneId[as.character(dt1$gene) %in% gene.sorted])
-# 
-# # Save Entrezgene IDs and gene names
-# out <- data.table(geneID = geneID,
-#                   geneName = gene.sorted)
-# write.csv(out,
-#           file = "mes13/tmp/gene.sorted.csv",
-#           row.names = FALSE)
-# 
-# # Get pathways----
-# m1 <- enrichPathway(gene = geneID,
-#                     pvalueCutoff = 1, 
-#                     readable = T, 
-#                     organism = "mouse")
-# t2 <- as.data.table(m1)
-# t2
-# write.csv(t2,
-#           file = "mes13/tmp/pathways.csv",
-#           row.names = FALSE)
-# 
-# # Pathway barplot----
-# tiff(filename = "mes13/tmp/pathway.tiff",
-#      height = 3,
-#      width = 10,
-#      units = 'in',
-#      res = 300,
-#      compression = "lzw+p")
-# barplot(m1, 
-#         showCategory = 10)
-# graphics.off()
-# 
-# # Other plots etc.----
-# # Source: https://bioconductor.org/packages/release/bioc/vignettes/ReactomePA/inst/doc/ReactomePA.html
-# dotplot(m1, showCategory=15)
-# 
-# enrichMap(m1, 
-#           layout = igraph::layout.kamada.kawai, 
-#           vertex.label.cex = 1)
-# 
-# cnetplot(m1, categorySize="pvalue", foldChange = geneID)
-# 
-# m2 <- gsePathway(geneID,
-#                  pvalueCutoff = 1)
-# 
-# enrichMap(t2)
+
+tiff(filename = "mes13/tmp/dbdb_top_meth_diff_16w.tiff",
+     height = 5,
+     width = 12,
+     units = 'in',
+     res = 300,
+     compression = "lzw+p")
+gridExtra::grid.arrange(p2a, p2b, p1, nrow = 1)
+graphics.off()

@@ -64,7 +64,7 @@ m1 <- enrichPathway(gene = dt2$entraz_id,
 t1 <- as.data.table(m1)
 t1
 write.csv(t1,
-          file = "mes13/tmp/rnaseq_lg-hg_pathway.csv",
+          file = "mes13/tmp/mes13_rnaseq_lg-hg_pathway.csv",
           row.names = FALSE)
 
 tiff(filename = "mes13/tmp/rnaseq_lg-hg_pathway.tiff",
