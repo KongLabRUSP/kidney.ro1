@@ -467,7 +467,7 @@ tiff(filename = "mes13/tmp/mes13_meth_genes.from.path_pathways.tiff",
      res = 300,
      compression = "lzw+p")
 barplot(m1, 
-        showCategory = 30)
+        showCategory = 20)
 graphics.off()
 
 # Heatmap of the selected genes----

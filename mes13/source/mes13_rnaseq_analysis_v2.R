@@ -59,24 +59,6 @@ path.mm$path <- gsub(pattern = "Mus musculus: ",
 path.mm
 
 ##  David's selection of pathways, 09/20/2017----
-# TNF signaling
-# Activation of NF-kappaB in B cells
-# Activation of the AP-1 family of trTNF signalinganscription factors
-# Biological oxidations
-# COX reactions
-# Cell-extracellular matrix interactions
-# Extracellular matrix organization
-# IL-6-type cytokine receptor ligand interactions
-# Interleukin-6 family signaling
-# Regulation of TNFR1 signaling
-# TNFR2 non-canonical NF-kB pathway
-# NF-kB is activated and signals survival
-# Inflammasomes
-# Oxidative Stress Induced Senescence
-# TGF-beta receptor signaling activates SMADs
-# TGF-beta receptor signaling in EMT (epithelial to mesenchymal transition)
-
-# Separate TNF signaling pathway----
 path.list <- c("TNF signaling",
                "Activation of NF-kappaB in B cells",
                "Activation of the AP-1 family of trTNF signalinganscription factors",
