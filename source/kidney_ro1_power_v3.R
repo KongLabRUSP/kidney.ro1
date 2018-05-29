@@ -105,11 +105,5 @@ tiff(filename = "tmp/power_curve_from_published_kidney_ro1.tiff",
 print(p1)
 graphics.off()
 
-# Assuming log-normal distribution----
-dt1$lmean <- log(dt1$mean)
-dt1$lsd <- log(dt1$sd)
-dt1$lse <- dt1$lsd/sqrt(dt1$n)
-dt1
-
 # sessionInfo()
 # sink()
