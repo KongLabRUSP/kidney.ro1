@@ -1,8 +1,12 @@
-# Project: GM-CSF
-# Description: sample size calculation
-# Author: Davit Sargsyan
-# Date: 08/23/2017
-#****************************************************
+# |-----------------------------------------------------------------------------------|
+# | Project:  Kidney RO1                                                              |
+# | Script:   Sample size and power calculations                                      |
+# | Author:   Davit Sargsyan                                                          |
+# | Created:  08/23/2017                                                              |
+# |-----------------------------------------------------------------------------------|
+# sink(file = "tmp/log_kidney_ro1_power_v1.R")
+date()
+
 require(data.table)
 require(pwr)
 require(bit64)
@@ -110,3 +114,6 @@ pwr.2p.test(h = log2(x1*sd2/x2*sd1),
             n = 10,
             sig.level = 0.05/5,
             alternative = "two.sided")
+
+# sessionInfo()
+# sink()

@@ -1,8 +1,12 @@
-# Project: GM-CSF
-# Description: sample size calculation
-# Author: Davit Sargsyan
-# Date: 08/23/2017
-#****************************************************
+# |-----------------------------------------------------------------------------------|
+# | Project:  Kidney RO1                                                              |
+# | Script:   Sample size and power calculations                                      |
+# | Author:   Davit Sargsyan                                                          |
+# | Created:  08/23/2017                                                              |
+# |-----------------------------------------------------------------------------------|
+# sink(file = "tmp/log_kidney_ro1_power_v2.R")
+date()
+
 require(data.table)
 require(pwr)
 require(bit64)
@@ -83,3 +87,6 @@ tiff(filename = "tmp/power_curves_kidney_ro1.tiff",
      compression = "lzw+p")
 print(p1)
 graphics.off()
+
+# sessionInfo()
+# sink()
